@@ -152,21 +152,52 @@ import {
     }
 
 
-    async function createNotification(toUserId, type, textValue) {
+    async function createNotification(toUserId, type, textValue, extraData = {}) {
       if (!currentUser || !toUserId || toUserId === currentUser.uid) return;
 
       try {
         await addDoc(collection(db, "notifications"), {
           toUserId: toUserId,
           fromUserId: currentUser.uid,
+          fromUsername: currentProfile.username || currentUser.email || "Someone",
+          fromAvatarUrl: currentProfile.avatarUrl || "",
           type: type,
           text: textValue,
           isRead: false,
-          createdAt: serverTimestamp()
+          createdAt: serverTimestamp(),
+          ...extraData
         });
       } catch (error) {
         console.log("Notification skipped");
       }
+    }
+
+    function buildNotificationText(item) {
+      const actorName = item.fromUsername || usersMap[item.fromUserId]?.username || usersMap[item.fromUserId]?.email || "Someone";
+
+      if (item.text && String(item.text).trim()) {
+        return item.text;
+      }
+
+      if (item.type === "friend_request") {
+        return `${actorName} sent you a friend request`;
+      }
+
+      if (item.type === "friend_accept") {
+        return `${actorName} accepted your friend request`;
+      }
+
+      if (item.type === "private_message") {
+        const preview = item.messagePreview ? `: ${item.messagePreview}` : "";
+        return `${actorName} sent you a private message${preview}`;
+      }
+
+      if (item.type === "mention") {
+        const preview = item.messagePreview ? `: ${item.messagePreview}` : "";
+        return `${actorName} mentioned you in global chat${preview}`;
+      }
+
+      return "New activity";
     }
 
     async function markNotificationRead(notificationId) {
@@ -440,7 +471,7 @@ import {
       unreadItems.forEach((item) => {
         notificationList.innerHTML += `
           <div class="notificationCard unread" onclick="openNotification('${item.id}')" role="button" tabindex="0">
-            <div class="notificationText">${escapeHtml(item.text || "New activity")}</div>
+            <div class="notificationText">${escapeHtml(buildNotificationText(item))}</div>
             <div class="notificationTime">${formatDateTime(item.createdAt)}</div>
           </div>
         `;
@@ -1102,7 +1133,14 @@ import {
           deniedByUserId: null
         }, { merge: true });
 
-        await createNotification(targetUserId, "friend_request", `${currentProfile.username || currentUser.email} sent you a friend request`);
+        await createNotification(
+          targetUserId,
+          "friend_request",
+          `${currentProfile.username || currentUser.email} sent you a friend request`,
+          {
+            actionTarget: "requests"
+          }
+        );
         alert("Friend request sent ✅");
       } catch (error) {
         alert("Could not send request");
@@ -1117,7 +1155,14 @@ import {
           updatedAt: serverTimestamp()
         });
         if (request?.fromUserId) {
-          await createNotification(request.fromUserId, "friend_accept", `${currentProfile.username || currentUser.email} accepted your friend request`);
+          await createNotification(
+            request.fromUserId,
+            "friend_accept",
+            `${currentProfile.username || currentUser.email} accepted your friend request`,
+            {
+              actionTarget: "friends"
+            }
+          );
         }
       } catch (error) {
         alert("Could not accept request");
@@ -1164,29 +1209,60 @@ import {
     window.toggleFloatingPanel = async function (panelName) {
       activeFloatingPanel = activeFloatingPanel === panelName ? "" : panelName;
       refreshFloatingPanels();
-
-      if (activeFloatingPanel === "notifications") {
-        await markAllNotificationsRead();
-      }
     };
 
     window.markAllNotificationsRead = async function () {
       const unreadItems = notificationsCache.filter((item) => !item.isRead);
+
+      if (unreadItems.length === 0) {
+        renderNotifications();
+        return;
+      }
+
       notificationsCache = notificationsCache.map((item) => ({ ...item, isRead: true }));
       renderNotifications();
-      await markGlobalMessagesAsSeen();
+
       for (const item of unreadItems) {
         await markNotificationRead(item.id);
       }
+
       renderNotifications();
     };
 
     window.openNotification = async function (notificationId) {
+      const targetNotification = notificationsCache.find((item) => item.id === notificationId);
+
       if (notificationId) {
         notificationsCache = notificationsCache.map((item) => item.id === notificationId ? { ...item, isRead: true } : item);
         renderNotifications();
         await markNotificationRead(notificationId);
       }
+
+      if (!targetNotification) {
+        chat.scrollTop = chat.scrollHeight;
+        return;
+      }
+
+      if (targetNotification.type === "friend_request") {
+        activeFloatingPanel = "requests";
+        refreshFloatingPanels();
+      } else if (targetNotification.type === "friend_accept") {
+        activeFloatingPanel = "friends";
+        refreshFloatingPanels();
+      } else if (targetNotification.type === "private_message") {
+        if (targetNotification.chatUserId) {
+          openPrivateChat(targetNotification.chatUserId);
+        } else if (targetNotification.fromUserId) {
+          openPrivateChat(targetNotification.fromUserId);
+        }
+      } else if (targetNotification.type === "mention") {
+        activePrivateChatUserId = "";
+        privateMessagesCache = [];
+        activeChatMode = "global";
+        updateChatModeUI();
+        closeFloatingPanels();
+      }
+
       chat.scrollTop = chat.scrollHeight;
     };
 
@@ -1272,12 +1348,17 @@ import {
 
     window.switchChatMode = function (mode) {
       activeChatMode = mode === "private" ? "private" : "global";
-      updateChatModeUI();
 
-      if (activeChatMode === "private") {
+      if (activeChatMode === "global") {
+        activePrivateChatUserId = "";
+        privateMessagesCache = [];
+        subscribeToPrivateMessages();
+        closeFloatingPanels();
+      } else {
         subscribeToPrivateMessages();
       }
 
+      updateChatModeUI();
       updateMentionSuggestions();
       messageInput.focus();
     };
@@ -1367,7 +1448,11 @@ import {
           await createNotification(
             mentionedUser.userId,
             "mention",
-            `${currentProfile.username || currentUser.email} mentioned you in group chat`
+            `${currentProfile.username || currentUser.email} mentioned you in global chat`,
+            {
+              actionTarget: "global",
+              messagePreview: textValue.slice(0, 80)
+            }
           );
         }
       } else {
@@ -1403,7 +1488,12 @@ import {
         await createNotification(
           activePrivateChatUserId,
           "private_message",
-          `${currentProfile.username || currentUser.email} sent you a private message`
+          `${currentProfile.username || currentUser.email} sent you a private message`,
+          {
+            chatUserId: currentUser.uid,
+            actionTarget: "private",
+            messagePreview: textValue.slice(0, 80)
+          }
         );
       }
 
