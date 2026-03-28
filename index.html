@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <div class="app">
+    <div class="header">
+      <h1>Chat App</h1>
+      <button id="themeToggleBtn" onclick="toggleDarkMode()" type="button">Dark Mode</button>
+    </div>
+
+    <p id="onlineCount">0 users online</p>
+
+    <div id="authSection">
+      <div class="authTabs">
+        <button id="loginTabButton" class="authTab active" onclick="showAuthTab('login')" type="button">Login</button>
+        <button id="registerTabButton" class="authTab" onclick="showAuthTab('register')" type="button">Register</button>
+      </div>
+
+      <div id="loginPanel" class="authPanel active">
+        <input id="loginEmail" type="email" placeholder="Email">
+
+        <div class="passwordWrap">
+          <input id="loginPassword" type="password" placeholder="Password">
+          <button class="eyeButton" onclick="togglePassword('loginPassword')" type="button" aria-label="Toggle password">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 5C6.5 5 2.1 8.4 1 12c1.1 3.6 5.5 7 11 7s9.9-3.4 11-7c-1.1-3.6-5.5-7-11-7zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9zm0-7A2.5 2.5 0 1 0 12 14.5 2.5 2.5 0 0 0 12 9.5z"/>
+            </svg>
+          </button>
+        </div>
+
+        <button onclick="login()">Login</button>
+      </div>
+
+      <div id="registerPanel" class="authPanel">
+        <input id="registerUsername" type="text" placeholder="Username">
+        <input id="registerEmail" type="email" placeholder="Email">
+
+        <div class="passwordWrap">
+          <input id="registerPassword" type="password" placeholder="Password">
+          <button class="eyeButton" onclick="togglePassword('registerPassword')" type="button" aria-label="Toggle password">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 5C6.5 5 2.1 8.4 1 12c1.1 3.6 5.5 7 11 7s9.9-3.4 11-7c-1.1-3.6-5.5-7-11-7zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9zm0-7A2.5 2.5 0 1 0 12 14.5 2.5 2.5 0 0 0 12 9.5z"/>
+            </svg>
+          </button>
+        </div>
+
+        <button onclick="register()">Register</button>
+      </div>
+
+      <p id="authMessage"></p>
+    </div>
+
+    <div id="chatSection">
+      <div class="topBar">
+        <div class="topBarLeft">
+          <p id="welcomeText"></p>
+          <p id="profileSummary"></p>
+        </div>
+
+        <div class="topBarButtons">
+          <button id="friendsButton" class="ghostButton" onclick="toggleFloatingPanel('friends')" type="button">Friends</button>
+          <button id="requestsButton" class="ghostButton" onclick="toggleFloatingPanel('requests')" type="button">Requests</button>
+          <div class="notificationsWrap">
+            <button id="notificationsButton" class="bellButton" onclick="toggleFloatingPanel('notifications')" type="button">🔔<span id="notificationBadge" class="badgeBubble">0</span></button>
+          </div>
+          <button onclick="toggleProfileEditor()" type="button">Edit Profile</button>
+          <button onclick="logout()" type="button">Logout</button>
+        </div>
+      </div>
+
+      <div id="profileEditor">
+        <p class="profileTitle">Edit Profile</p>
+
+        <input id="profileUsername" type="text" placeholder="Username">
+        <textarea id="profileBio" placeholder="Bio"></textarea>
+        <input id="profileAvatarUrl" type="text" placeholder="Profile picture URL">
+
+        <div class="smallNote">Pick your color</div>
+        <div class="colorRow">
+          <button class="colorChoice" data-color="#3b82f6" style="background:#3b82f6;" type="button" onclick="selectProfileColor('#3b82f6')"></button>
+          <button class="colorChoice" data-color="#ef4444" style="background:#ef4444;" type="button" onclick="selectProfileColor('#ef4444')"></button>
+          <button class="colorChoice" data-color="#10b981" style="background:#10b981;" type="button" onclick="selectProfileColor('#10b981')"></button>
+          <button class="colorChoice" data-color="#f59e0b" style="background:#f59e0b;" type="button" onclick="selectProfileColor('#f59e0b')"></button>
+          <button class="colorChoice" data-color="#8b5cf6" style="background:#8b5cf6;" type="button" onclick="selectProfileColor('#8b5cf6')"></button>
+          <button class="colorChoice" data-color="#ec4899" style="background:#ec4899;" type="button" onclick="selectProfileColor('#ec4899')"></button>
+          <button class="colorChoice" data-color="#14b8a6" style="background:#14b8a6;" type="button" onclick="selectProfileColor('#14b8a6')"></button>
+          <button class="colorChoice" data-color="#f97316" style="background:#f97316;" type="button" onclick="selectProfileColor('#f97316')"></button>
+        </div>
+
+        <div class="row">
+          <button onclick="saveProfile()">Save Profile</button>
+          <button onclick="toggleProfileEditor()" type="button">Close</button>
+        </div>
+      </div>
+
+      <div class="modeTabs">
+        <button id="globalModeButton" class="modeTab active" onclick="switchChatMode('global')" type="button">Global Chat</button>
+        <button id="privateModeButton" class="modeTab" onclick="switchChatMode('private')" type="button">Private Chat</button>
+      </div>
+
+      <div id="requestPanel">
+        <div class="panelCloseRow">
+          <p class="panelTitle">Friend Requests</p>
+          <button class="panelCloseButton" onclick="closeFloatingPanels()" type="button">Close</button>
+        </div>
+        <div id="requestList"></div>
+      </div>
+
+      <div id="notificationPanel" class="notificationPanel">
+        <div class="notificationHeader">
+          <p class="notificationTitle">Notifications</p>
+          <div class="requestButtons">
+            <button onclick="markAllNotificationsRead()" type="button">Mark All Read</button>
+            <button class="panelCloseButton" onclick="closeFloatingPanels()" type="button">Close</button>
+          </div>
+        </div>
+        <div id="notificationMeta" class="notificationMeta"></div>
+        <div id="notificationList" class="notificationList"></div>
+      </div>
+
+      <div id="privatePanel">
+        <div class="panelCloseRow">
+          <p class="panelTitle">Friends</p>
+          <button class="panelCloseButton" onclick="closeFloatingPanels()" type="button">Close</button>
+        </div>
+        <div id="friendList"></div>
+      </div>
+
+      <div class="chatHeader">
+        <div class="chatTitleWrap">
+          <p id="chatModeTitle">Global chat room</p>
+          <button id="closePrivateChatButton" class="closeChatButton" onclick="closePrivateChat()" type="button" style="display:none;">Close Chat</button>
+        </div>
+      </div>
+
+      <div id="chat"></div>
+
+      <div class="typingBar" id="typingBar"></div>
+
+      <div id="emojiPicker"></div>
+
+      <div id="mentionSuggestions" class="mentionSuggestions"></div>
+
+      <div class="chatInputWrap">
+        <div class="chatInputRow">
+          <button onclick="toggleEmojiPicker()" type="button">😊</button>
+          <input id="messageInput" placeholder="Message">
+          <button onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
