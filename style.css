@@ -232,10 +232,24 @@
       position: relative;
     }
 
-    .ghostButton {
-      background: transparent;
+    .ghostButton,
+    .bellButton,
+    .messageFriendBtn,
+    .panelCloseButton,
+    .closeChatButton,
+    .emojiBtn,
+    .requestButtons button {
+      background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .ghostButton.active,
+    .bellButton.active {
+      background: var(--button-bg);
+      color: var(--button-text);
+      border-color: transparent;
     }
 
     #profileEditor {
@@ -317,12 +331,7 @@
       color: white;
     }
 
-    .messageFriendBtn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
-
+    
     .removeFriendBtn {
       background: var(--danger);
       color: white;
@@ -622,6 +631,7 @@
     .notificationCard.unread {
       border-color: rgba(59, 130, 246, 0.45);
       box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.12) inset;
+      background: rgba(59, 130, 246, 0.05);
     }
 
     .notificationText {
@@ -641,29 +651,31 @@
       padding: 2px 7px;
       border-radius: 999px;
       background: #dbeafe;
-      color: #1e3a8a;
-      border: 1px solid rgba(59, 130, 246, 0.28);
+      color: #1d4ed8;
+      border: 1px solid rgba(59, 130, 246, 0.35);
       font-weight: 700;
     }
 
     body.dark .mentionTag {
-      background: #1e3a8a;
-      color: #eff6ff;
-      border-color: rgba(191, 219, 254, 0.28);
+      background: rgba(96, 165, 250, 0.2);
+      color: #bfdbfe;
+      border-color: rgba(147, 197, 253, 0.35);
     }
 
     .mentionMe {
       display: inline-block;
-      padding: 1px 6px;
+      padding: 2px 7px;
       border-radius: 999px;
-      background: rgba(245, 158, 11, 0.22);
+      background: #fef3c7;
       color: #92400e;
+      border: 1px solid rgba(245, 158, 11, 0.35);
       font-weight: 700;
     }
 
     body.dark .mentionMe {
-      background: rgba(250, 204, 21, 0.22);
+      background: rgba(245, 158, 11, 0.2);
       color: #fde68a;
+      border-color: rgba(251, 191, 36, 0.35);
     }
 
     .typingBar {
@@ -715,10 +727,8 @@
 
     .panelCloseButton,
     .closeChatButton {
-      background: transparent;
-      color: var(--subtext);
-      border: 1px solid var(--border);
-      padding: 6px 10px;
+      padding: 10px 14px;
+      color: var(--text);
     }
 
     .chatTitleWrap {
