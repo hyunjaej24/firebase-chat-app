@@ -1,0 +1,816 @@
+:root {
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #111827;
+      --subtext: #6b7280;
+      --border: #d1d5db;
+      --input-bg: #ffffff;
+      --my-msg: #dbeafe;
+      --other-msg: #e5e7eb;
+      --button-bg: #111827;
+      --button-text: #ffffff;
+      --tab-bg: #e5e7eb;
+      --tab-active-bg: #111827;
+      --tab-active-text: #ffffff;
+      --panel-bg: #f9fafb;
+      --online: #22c55e;
+      --success: #16a34a;
+      --danger: #ef4444;
+    }
+
+    body.dark {
+      --bg: #111827;
+      --card: #1f2937;
+      --text: #f9fafb;
+      --subtext: #9ca3af;
+      --border: #374151;
+      --input-bg: #111827;
+      --my-msg: #1d4ed8;
+      --other-msg: #374151;
+      --button-bg: #f9fafb;
+      --button-text: #111827;
+      --tab-bg: #374151;
+      --tab-active-bg: #f9fafb;
+      --tab-active-text: #111827;
+      --panel-bg: #111827;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .app {
+      max-width: 860px;
+      margin: 30px auto;
+      background: var(--card);
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    #onlineCount {
+      margin: 0 0 16px 0;
+      font-size: 13px;
+      color: var(--subtext);
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      background: var(--input-bg);
+      color: var(--text);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: Arial, sans-serif;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--subtext);
+    }
+
+    button {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      background: var(--button-bg);
+      color: var(--button-text);
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .row button {
+      flex: 1;
+    }
+
+    #authSection {
+      max-width: 420px;
+      margin: 30px auto 10px auto;
+    }
+
+    .authTabs,
+    .modeTabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .authTab,
+    .modeTab {
+      flex: 1;
+      background: var(--tab-bg);
+      color: var(--text);
+    }
+
+    .authTab.active,
+    .modeTab.active {
+      background: var(--tab-active-bg);
+      color: var(--tab-active-text);
+    }
+
+    .authPanel {
+      display: none;
+    }
+
+    .authPanel.active {
+      display: block;
+    }
+
+    #authMessage {
+      min-height: 20px;
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--subtext);
+      text-align: center;
+    }
+
+    .passwordWrap {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .passwordWrap input {
+      margin-bottom: 0;
+      padding-right: 46px;
+    }
+
+    .eyeButton {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      color: var(--subtext);
+      padding: 0;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .eyeButton svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    #chatSection {
+      display: none;
+    }
+
+    .topBar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .topBarLeft {
+      min-width: 0;
+      flex: 1;
+    }
+
+    #welcomeText {
+      margin: 0;
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    #profileSummary {
+      margin: 4px 0 0 0;
+      font-size: 13px;
+      color: var(--subtext);
+      word-break: break-word;
+    }
+
+    .topBarButtons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .app {
+      position: relative;
+    }
+
+    .ghostButton {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    #profileEditor {
+      display: none;
+      position: absolute;
+      top: 126px;
+      left: 24px;
+      width: min(420px, calc(100% - 48px));
+      max-height: min(68vh, 620px);
+      overflow-y: auto;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.16);
+      z-index: 40;
+    }
+
+    #requestPanel,
+    #privatePanel,
+    .notificationPanel {
+      display: none;
+      position: absolute;
+      top: 126px;
+      right: 24px;
+      width: min(360px, calc(100% - 48px));
+      max-height: min(68vh, 620px);
+      overflow-y: auto;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.16);
+      z-index: 40;
+    }
+
+    .profileTitle,
+    .panelTitle {
+      margin: 0 0 10px 0;
+      font-weight: bold;
+    }
+
+    .requestCard,
+    .friendCard {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: var(--card);
+    }
+
+    .requestName,
+    .friendName {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .requestMeta,
+    .friendMeta {
+      font-size: 12px;
+      color: var(--subtext);
+      margin-bottom: 8px;
+    }
+
+    .requestButtons,
+    .friendButtons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .acceptBtn {
+      background: var(--success);
+      color: white;
+    }
+
+    .denyBtn {
+      background: var(--danger);
+      color: white;
+    }
+
+    .messageFriendBtn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .removeFriendBtn {
+      background: var(--danger);
+      color: white;
+    }
+
+    .colorRow {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .colorChoice {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .colorChoice.active {
+      border-color: var(--text);
+    }
+
+    .chatHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    #chatModeTitle {
+      margin: 0;
+      font-size: 14px;
+      color: var(--subtext);
+      word-break: break-word;
+    }
+
+    #chat {
+      height: 420px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--input-bg);
+      margin-bottom: 12px;
+    }
+
+    .messageRow {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .myRow {
+      justify-content: flex-end;
+    }
+
+    .otherRow {
+      justify-content: flex-start;
+    }
+
+    .messageWrap {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      max-width: 85%;
+    }
+
+    .myWrap {
+      flex-direction: row-reverse;
+    }
+
+    .otherWrap {
+      flex-direction: row;
+    }
+
+    .avatarWrap {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      font-size: 14px;
+      border: 2px solid transparent;
+      background: #6b7280;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .onlineDot {
+      position: absolute;
+      right: -1px;
+      bottom: -1px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--online);
+      border: 2px solid var(--card);
+    }
+
+    .message {
+      padding: 10px 12px;
+      border-radius: 14px;
+      max-width: 100%;
+      word-break: break-word;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .myMessage {
+      background: var(--my-msg);
+      text-align: right;
+    }
+
+    .otherMessage {
+      background: var(--other-msg);
+      text-align: left;
+    }
+
+    .messageMeta {
+      font-size: 12px;
+      color: var(--subtext);
+      margin-bottom: 4px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .myMeta {
+      justify-content: flex-end;
+    }
+
+    .otherMeta {
+      justify-content: flex-start;
+    }
+
+    .seenText {
+      font-size: 11px;
+      color: var(--subtext);
+      margin-top: 4px;
+      opacity: 0.9;
+    }
+
+    .friendBtn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .friendBtn.friendAdded {
+      background: rgba(34, 197, 94, 0.12);
+      border-color: rgba(34, 197, 94, 0.35);
+    }
+
+    .friendBtn.pending {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+
+    .friendBtn.denied {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+
+    .chatInputWrap {
+      position: relative;
+    }
+
+    .chatInputRow {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chatInputRow input {
+      margin-bottom: 0;
+      flex: 1;
+    }
+
+    #emojiPicker {
+      display: none;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel-bg);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .emojiBtn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      min-width: 42px;
+    }
+
+    .smallNote {
+      font-size: 12px;
+      color: var(--subtext);
+      margin-top: 8px;
+    }
+
+
+    .notificationsWrap {
+      position: relative;
+    }
+
+    .bellButton {
+      position: relative;
+      min-width: 46px;
+      padding: 10px 14px;
+    }
+
+    .badgeBubble {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: var(--danger);
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+
+    .notificationHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .notificationTitle {
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .notificationMeta {
+      font-size: 12px;
+      color: var(--subtext);
+      margin-bottom: 10px;
+    }
+
+    .notificationList {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .notificationCard {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      background: var(--card);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .notificationCard.unread {
+      border-color: rgba(59, 130, 246, 0.45);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.12) inset;
+    }
+
+    .notificationText {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+
+    .notificationTime {
+      font-size: 12px;
+      color: var(--subtext);
+    }
+
+    .mentionTag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1e3a8a;
+      border: 1px solid rgba(59, 130, 246, 0.28);
+      font-weight: 700;
+    }
+
+    body.dark .mentionTag {
+      background: #1e3a8a;
+      color: #eff6ff;
+      border-color: rgba(191, 219, 254, 0.28);
+    }
+
+    .mentionMe {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: rgba(245, 158, 11, 0.22);
+      color: #92400e;
+      font-weight: 700;
+    }
+
+    body.dark .mentionMe {
+      background: rgba(250, 204, 21, 0.22);
+      color: #fde68a;
+    }
+
+    .typingBar {
+      min-height: 18px;
+      font-size: 12px;
+      color: var(--subtext);
+      margin: -2px 0 10px 0;
+    }
+
+
+    .statusPill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 5px;
+      font-size: 11px;
+      color: var(--subtext);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: rgba(255,255,255,0.35);
+    }
+
+    .statusPill.sent {
+      border-color: rgba(107, 114, 128, 0.25);
+    }
+
+    .statusPill.delivered {
+      border-color: rgba(59, 130, 246, 0.25);
+      color: #2563eb;
+    }
+
+    .statusPill.seen {
+      border-color: rgba(16, 185, 129, 0.26);
+      color: #059669;
+    }
+
+    body.dark .statusPill {
+      background: rgba(17,24,39,0.28);
+    }
+
+    .panelCloseRow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .panelCloseButton,
+    .closeChatButton {
+      background: transparent;
+      color: var(--subtext);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+    }
+
+    .chatTitleWrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mentionSuggestions {
+      display: none;
+      margin: 0 0 10px 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel-bg);
+      overflow: hidden;
+    }
+
+    .mentionSuggestionItem {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      color: var(--text);
+      border: none;
+      border-bottom: 1px solid var(--border);
+      border-radius: 0;
+      padding: 10px 12px;
+    }
+
+    .mentionSuggestionItem:last-child {
+      border-bottom: none;
+    }
+
+    .mentionSuggestionHandle {
+      font-size: 12px;
+      color: var(--subtext);
+      margin-left: 6px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+
+      .app {
+        margin: 10px auto;
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      .header,
+      .topBar,
+      .chatInputRow,
+      .chatHeader {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .row {
+        flex-direction: column;
+      }
+
+      .topBarButtons {
+        justify-content: stretch;
+      }
+
+      .topBarButtons button,
+      .friendButtons button,
+      .requestButtons button {
+        width: 100%;
+      }
+
+      #profileEditor,
+      #requestPanel,
+      #privatePanel,
+      .notificationPanel {
+        top: 176px;
+        right: 16px;
+        left: 16px;
+        width: auto;
+        max-height: 58vh;
+      }
+
+      .requestButtons {
+        flex-direction: column;
+      }
+
+      .messageWrap {
+        max-width: 100%;
+      }
+
+      #chat {
+        height: 52vh;
+      }
+    }
